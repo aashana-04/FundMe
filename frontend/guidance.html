@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personalized funding readiness assessment and guidance">
+    <title>Guidance - FundMe</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+
+    <main class="container section">
+        <div class="container-narrow">
+            <!-- Header -->
+            <div class="mb-6">
+                <h1>Funding Readiness Guidance</h1>
+                <p class="text-lg text-secondary">
+                    AI-simulated assessment based on your current stage
+                </p>
+            </div>
+
+            <!-- Readiness Summary -->
+            <div class="card mb-6" style="background-color: var(--color-bg-secondary);">
+                <h3 class="mb-3">Your Readiness Summary</h3>
+                <div id="readinessSummary" class="text-secondary">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Eligibility Statements -->
+            <section class="mb-6">
+                <h2 class="mb-4">What You Should Know</h2>
+                <div id="eligibilityStatements">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Action Checklist -->
+            <section>
+                <h2 class="mb-4">Action Plan</h2>
+
+                <!-- What to Do Now -->
+                <div class="collapsible open mb-3">
+                    <div class="collapsible-header">
+                        <h3 class="collapsible-title">Immediate Action Items</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <ul class="checklist" id="doNowList">
+                                <!-- Populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What to Avoid -->
+                <div class="collapsible mb-3">
+                    <div class="collapsible-header">
+                        <h3 class="collapsible-title">Actions to Avoid</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <ul class="checklist" id="avoidList">
+                                <!-- Populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What to Revisit Later -->
+                <div class="collapsible">
+                    <div class="collapsible-header">
+                        <h3 class="collapsible-title">Future Considerations</h3>
+                        <span class="collapsible-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <ul class="checklist" id="laterList">
+                                <!-- Populated by JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <div class="text-center mt-8">
+                <a href="opportunities.html" class="btn btn-primary btn-large">Explore Opportunities</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/interactions.js"></script>
+
+    <script>
+        // Check if onboarded
+        if (!FundMeState.isOnboarded()) {
+            window.location.href = 'index.html';
+        }
+        // ADD your AI guidance function below
+        async function loadGuidance() {
+            const state = FundMeState.getState();
+            const response = await fetch(`http://localhost:5000/guidance/${state._id}`);
+            const data = await response.json();
+            console.log(data);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = FundMeState.getState();
+            populateGuidance(state);
+        });
+
+        function populateGuidance(state) {
+            const stage = state.startupStage;
+            const isStudent = state.isStudent;
+
+            // Readiness summary
+            const summaries = {
+                'Idea': `At the conceptual stage, your priority should be structured validation rather than capital acquisition. You are currently too early for institutional accelerators and most formal incubation programs, which typically require evidence of product development and initial market response. However, university-affiliated innovation competitions, student-focused grant programs, and state-backed hackathons remain accessible and appropriate for your current position.`,
+
+                'Prototype': `With a functional prototype under development, you have crossed the first threshold of execution credibility. Prototype-stage grant programs (such as NIDHI Prayas and similar schemes) are now within reach. However, most seed funding mechanisms—particularly those administered through formal incubators—require legal incorporation as a prerequisite. Prioritize user validation and systematic assumption testing before committing to the incorporation process.`,
+
+                'Registered startup': `Legal registration marks a significant transition in your access to institutional funding programs. As a registered entity, you are now eligible for DPIIT recognition, which serves as a gateway to government-backed seed funding schemes including SISFS (₹20L-₹50L range). Registration unlocks approximately ${calculateUnlockedOpportunities('Registered startup')} additional program categories. Focus on programs that explicitly require incorporation, and ensure compliance with basic financial documentation standards.`,
+
+                'Early revenue': `The presence of early revenue—however modest—represents validated demand and shifts the nature of available support mechanisms. You are now positioned for institutional accelerators and early-stage investment conversations. However, revenue alone does not guarantee funding readiness. Investors will evaluate growth trajectory, unit economics, and retention metrics. Prepare quantitative evidence of scalability and ensure your financial model withstands scrutiny before initiating formal fundraising.`
+            };
+
+            document.getElementById('readinessSummary').innerHTML = summaries[stage];
+
+            // Eligibility statements
+            populateEligibilityStatements(state);
+
+            // Action lists
+            populateDoNow(state);
+            populateAvoid(state);
+            populateLater(state);
+        }
+
+        function calculateUnlockedOpportunities(stage) {
+            return stage === 'Registered startup' ? 15 : 12;
+        }
+
+        function populateEligibilityStatements(state) {
+            const container = document.getElementById('eligibilityStatements');
+            const statements = getEligibilityStatements(state);
+
+            container.innerHTML = statements.map(stmt => `
+        <div class="card mb-2" style="border-left: 3px solid ${stmt.color};">
+          <div class="font-medium mb-1">${stmt.title}</div>
+          <div class="text-sm text-secondary">${stmt.description}</div>
+        </div>
+      `).join('');
+        }
+
+        function getEligibilityStatements(state) {
+            const stage = state.startupStage;
+
+            const statements = {
+                'Idea': [
+                    {
+                        title: 'You are too early for accelerators',
+                        description: 'Most accelerators require a working product and initial traction. Focus on building your prototype first.',
+                        color: 'var(--color-warning)'
+                    },
+                    {
+                        title: 'Student programs are ideal for you',
+                        description: state.isStudent ? 'As a student, you have access to numerous competitions and university grants.' : 'While not a student, you can still access many innovation programs and competitions.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Registration can wait',
+                        description: 'Don\'t rush to incorporate. Validate your idea and build initial prototypes first.',
+                        color: 'var(--color-accent)'
+                    }
+                ],
+                'Prototype': [
+                    {
+                        title: 'Registration unlocks major opportunities',
+                        description: 'Incorporating as a legal entity would unlock SISFS and government schemes worth ₹20L+.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Prototype grants are available now',
+                        description: 'Programs like NIDHI Prayas provide up to ₹10L for prototype development.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Focus on validation before fundraising',
+                        description: 'Build strong evidence of problem-solution fit before pursuing larger funding.',
+                        color: 'var(--color-accent)'
+                    }
+                ],
+                'Registered startup': [
+                    {
+                        title: 'SISFS eligibility unlocked',
+                        description: 'If you\'re less than 2 years old and DPIIT-recognized, you\'re eligible for ₹20L-₹50L seed funding.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Incubators are now accessible',
+                        description: 'Top incubators like T-Hub, NSRCEL, and SINE accept registered entities.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Build strong fundamentals',
+                        description: 'Focus on team, product, and initial metrics rather than just chasing funding.',
+                        color: 'var(--color-accent)'
+                    }
+                ],
+                'Early revenue': [
+                    {
+                        title: 'You\'re ready for accelerators',
+                        description: 'Programs like Sequoia Surge and Zone Startups seek early revenue as proof of traction.',
+                        color: 'var(--color-success)'
+                    },
+                    {
+                        title: 'Metrics matter more than stage',
+                        description: 'Focus on growth rate, retention, and unit economics. Investors evaluate potential, not just current numbers.',
+                        color: 'var(--color-accent)'
+                    },
+                    {
+                        title: 'Network with investors proactively',
+                        description: 'Fundraising takes 3-6 months. Start building relationships before you need capital.',
+                        color: 'var(--color-success)'
+                    }
+                ]
+            };
+
+            return statements[stage] || [];
+        }
+
+        function populateDoNow(state) {
+            const items = getDoNowItems(state.startupStage);
+            const list = document.getElementById('doNowList');
+
+            list.innerHTML = items.map(item => `
+        <li class="checklist-item">
+          <span class="checklist-icon check">✓</span>
+          <span>${item}</span>
+        </li>
+      `).join('');
+        }
+
+        function getDoNowItems(stage) {
+            const items = {
+                'Idea': [
+                    'Conduct structured problem interviews with at least 15-20 individuals from your target user segment',
+                    'Document core assumptions in writing and identify which require immediate validation',
+                    'Build a minimal validation asset—either a functional prototype or a high-fidelity simulation',
+                    'Apply only to programs explicitly aligned with pre-incorporation, idea-stage ventures'
+                ],
+                'Prototype': [
+                    'Complete DPIIT startup recognition application if incorporation is under consideration',
+                    'Submit applications to prototype-specific  grant programs (NIDHI Prayas, Atal Innovation, university schemes)',
+                    'Maintain a structured log of technical decisions, user feedback, and iteration rationale',
+                    'Consult a chartered accountant regarding incorporation timing, tax structure, and compliance requirements'
+                ],
+                'Registered startup': [
+                    'Initiate SISFS application immediately if you meet eligibility criteria (DPIIT-recognized, less than 2 years post-incorporation)',
+                    'Submit formal applications to 3-5 incubators that match your sector and geographic focus',
+                    'Develop a concise pitch deck containing: problem statement, solution approach, current progress, and financial projections',
+                    'Establish basic accounting infrastructure for financial tracking and statutory compliance'
+                ],
+                'Early revenue': [
+                    'Quantify and document all key metrics: monthly recurring revenue, user acquisition cost, lifetime value, retention cohorts, burn rate',
+                    'Identify 5-10 investors or accelerators with a demonstrated thesis in your sector and stage',
+                    'Refine pitch narrative based on empirical data from actual customers, not assumptions',
+                    'Build advisory relationships with operators who have scaled businesses in adjacent domains'
+                ]
+            };
+
+            return items[stage] || [];
+        }
+
+        function populateAvoid(state) {
+            const items = getAvoidItems(state.startupStage);
+            const list = document.getElementById('avoidList');
+
+            list.innerHTML = items.map(item => `
+        <li class="checklist-item">
+          <span class="checklist-icon cross">✗</span>
+          <span>${item}</span>
+        </li>
+      `).join('');
+        }
+
+        function getAvoidItems(stage) {
+            const items = {
+                'Idea': [
+                    'Don\'t incorporate prematurely just to "look serious"',
+                    'Avoid applying to accelerators that require working products',
+                    'Don\'t spend months on perfect business plans—build and test instead',
+                    'Avoid pitching to VCs at this stage (they won\'t engage)'
+                ],
+                'Prototype': [
+                    'Don\'t rush incorporation without understanding legal and tax implications',
+                    'Avoid programs that require significant equity for small amounts',
+                    'Don\'t ignore user validation in favor of building more features',
+                    'Avoid spending grant money on non-essential items'
+                ],
+                'Registered startup': [
+                    'Don\'t apply to every program just because you\'re eligible',
+                    'Avoid raising funding without a clear plan for how you\'ll use it',
+                    'Don\'t neglect product development while fundraising',
+                    'Avoid signing unfavorable terms just because you\'re early-stage'
+                ],
+                'Early revenue': [
+                    'Don\'t chase valuation over the right partner/investor fit',
+                    'Avoid fundraising without strong unit economics story',
+                    'Don\'t treat early revenue as guaranteed product-market fit',
+                    'Avoid over-optimizing pitch deck while ignoring actual business metrics'
+                ]
+            };
+
+            return items[stage] || [];
+        }
+
+        function populateLater(state) {
+            const items = getLaterItems(state.startupStage);
+            const list = document.getElementById('laterList');
+
+            list.innerHTML = items.map(item => `
+        <li class="checklist-item">
+          <span class="checklist-icon">•</span>
+          <span>${item}</span>
+        </li>
+      `).join('');
+        }
+
+        function getLaterItems(stage) {
+            const items = {
+                'Idea': [
+                    'Incorporation (after validating the idea and committing to build)',
+                    'Seed funding programs (need working product first)',
+                    'Accelerators (require demonstrated traction)',
+                    'Hiring full-time team (validate founder-market fit first)'
+                ],
+                'Prototype': [
+                    'Accelerator applications (build more traction first)',
+                    'VC fundraising (get to early revenue stage)',
+                    'Scaling operations (ensure product-market fit)',
+                    'International expansion (nail local market first)'
+                ],
+                'Registered startup': [
+                    'Series A fundraising (need strong growth metrics)',
+                    'Aggressive hiring (ensure runway and product fit)',
+                    'Premium incubators like Y Combinator (build more traction)',
+                    'Multiple product lines (perfect one first)'
+                ],
+                'Early revenue': [
+                    'Growth-stage funding (optimize unit economics first)',
+                    'Aggressive geographic expansion (solidify core market)',
+                    'M&A conversations (focus on building, not exiting)',
+                    'Premature hiring for roles you don\'t need yet'
+                ]
+            };
+
+            return items[stage] || [];
+        }
+    </script>
+</body>
+
+</html>

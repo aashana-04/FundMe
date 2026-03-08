@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FundMe - AI-powered platform for understanding funding eligibility and discovering realistic funding opportunities">
+  <title>Welcome to FundMe - Funding Guidance for Students & Early-Stage Founders</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  
+  <main class="container-narrow section">
+    <!-- Welcome Section -->
+    <div class="text-center mb-6">
+      <h1 style="margin-bottom: var(--space-3);">FundMe</h1>
+      <p class="text-xl text-secondary">
+        Understanding funding comes before raising funding
+      </p>
+      <p class="text-muted mt-3">
+        AI-powered guidance for students and early-stage founders seeking funding from ₹50,000 to ₹10 Crores.
+      </p>
+    </div>
+
+    <!-- Onboarding Form -->
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+      <div class="text-center mb-4">
+        <p class="text-sm text-muted" id="stepCounter">Step 1 of 6</p>
+        <div class="progress-steps">
+          <div class="progress-step active"></div>
+          <div class="progress-step"></div>
+          <div class="progress-step"></div>
+          <div class="progress-step"></div>
+          <div class="progress-step"></div>
+          <div class="progress-step"></div>
+        </div>
+      </div>
+
+      <!-- Step 1: Primary Intent -->
+      <div id="step1" class="onboarding-step">
+        <h3 class="mb-3">What brings you to FundMe?</h3>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="primaryIntent" value="Build a startup">
+            <div>
+              <div class="font-medium">Build a startup</div>
+              <div class="text-sm text-muted">I want to build and scale a venture</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="primaryIntent" value="Explore student innovation opportunities">
+            <div>
+              <div class="font-medium">Explore student innovation opportunities</div>
+              <div class="text-sm text-muted">I want to explore programs and competitions</div>
+            </div>
+          </label>
+        </div>
+        <div class="flex-between mt-4">
+          <div></div>
+          <button class="btn btn-primary next-step">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Student Status -->
+      <div id="step2" class="onboarding-step hidden">
+        <h3 class="mb-3">Are you currently a student?</h3>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="isStudent" value="yes">
+            <div>
+              <div class="font-medium">Yes</div>
+              <div class="text-sm text-muted">Currently enrolled in college/university</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="isStudent" value="no">
+            <div>
+              <div class="font-medium">No</div>
+              <div class="text-sm text-muted">Graduated or not in college</div>
+            </div>
+          </label>
+        </div>
+        <div class="flex-between mt-4">
+          <button class="btn btn-ghost prev-step">Back</button>
+          <button class="btn btn-primary next-step">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Startup Stage -->
+      <div id="step3" class="onboarding-step hidden">
+        <h3 class="mb-3">Where are you in your journey?</h3>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="startupStage" value="Idea">
+            <div>
+              <div class="font-medium">Idea</div>
+              <div class="text-sm text-muted">Conceptualizing a solution</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="startupStage" value="Prototype">
+            <div>
+              <div class="font-medium">Prototype</div>
+              <div class="text-sm text-muted">Building or testing an MVP</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="startupStage" value="Registered startup">
+            <div>
+              <div class="font-medium">Registered startup</div>
+              <div class="text-sm text-muted">Legally registered entity</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="startupStage" value="Early revenue">
+            <div>
+              <div class="font-medium">Early revenue</div>
+              <div class="text-sm text-muted">Generating initial sales</div>
+            </div>
+          </label>
+        </div>
+        <div class="flex-between mt-4">
+          <button class="btn btn-ghost prev-step">Back</button>
+          <button class="btn btn-primary next-step">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Domain/Sector -->
+      <div id="step4" class="onboarding-step hidden">
+        <h3 class="mb-3">What domain are you working in?</h3>
+        <div class="form-group">
+          <label class="form-label" for="domain">Select your sector</label>
+          <select id="domain" class="form-select">
+            <!-- Populated by JavaScript -->
+          </select>
+        </div>
+        <div class="flex-between mt-4">
+          <button class="btn btn-ghost prev-step">Back</button>
+          <button class="btn btn-primary next-step">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Geography -->
+      <div id="step5" class="onboarding-step hidden">
+        <h3 class="mb-3">Where are you based?</h3>
+        <div class="form-group">
+          <label class="form-label" for="country">Country</label>
+          <select id="country" class="form-select" disabled>
+            <option value="India" selected>India</option>
+          </select>
+          <p class="text-xs text-muted mt-1">Currently serving India-based founders</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="state">State</label>
+          <select id="state" class="form-select">
+            <!-- Populated by JavaScript -->
+          </select>
+        </div>
+        <div class="flex-between mt-4">
+          <button class="btn btn-ghost prev-step">Back</button>
+          <button class="btn btn-primary next-step">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 6: Funding Range -->
+      <div id="step6" class="onboarding-step hidden">
+        <h3 class="mb-3">What funding range are you targeting?</h3>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="fundingRange" value="< ₹5L">
+            <div>
+              <div class="font-medium">< ₹5 Lakh</div>
+              <div class="text-sm text-muted">Early-stage grants and competitions</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="fundingRange" value="₹5L – ₹25L">
+            <div>
+              <div class="font-medium">₹5 Lakh – ₹25 Lakh</div>
+              <div class="text-sm text-muted">Seed funding and incubators</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="fundingRange" value="₹25L – ₹1 Cr">
+            <div>
+              <div class="font-medium">₹25 Lakh – ₹1 Crore</div>
+              <div class="text-sm text-muted">Early investment rounds</div>
+            </div>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="fundingRange" value="₹1 Cr – ₹10 Cr">
+            <div>
+              <div class="font-medium">₹1 Crore – ₹10 Crore</div>
+              <div class="text-sm text-muted">Growth capital</div>
+            </div>
+          </label>
+        </div>
+        <div class="flex-between mt-4">
+          <button class="btn btn-ghost prev-step">Back</button>
+          <button class="btn btn-primary btn-large" id="submitOnboarding">Get Started</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="text-center mt-8">
+      <p class="text-sm text-muted">
+        Your responses help us personalize your experience.<br>
+        You can update these settings anytime from your profile.
+      </p>
+    </div>
+  </main>
+
+  <script src="js/state.js"></script>
+  <script src="js/onboarding.js"></script>
+  
+  <script>
+    // Check if already onboarded
+    if (FundMeState.isOnboarded()) {
+      window.location.href = 'home.html';
+    }
+  </script>
+</body>
+</html>

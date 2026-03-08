@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your personalized FundMe dashboard with funding opportunities and guidance">
+    <title>Home - FundMe</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+
+    <main class="container section">
+        <!-- Personalized Welcome -->
+        <div class="mb-6">
+            <h1 id="welcomeMessage">Welcome to FundMe</h1>
+            <p class="text-lg text-secondary" id="userContext"></p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-3 mb-6" style="gap: var(--space-3);">
+            <div class="card">
+                <div class="text-sm text-muted mb-1">Current Stage</div>
+                <div class="text-xl font-semibold" id="currentStage">-</div>
+            </div>
+            <div class="card">
+                <div class="text-sm text-muted mb-1">Target Funding</div>
+                <div class="text-xl font-semibold" id="targetFunding">-</div>
+            </div>
+            <div class="card">
+                <div class="text-sm text-muted mb-1">Opportunities for You</div>
+                <div class="text-xl font-semibold" id="opportunityCount">-</div>
+            </div>
+        </div>
+
+        <!-- Recommended for You -->
+        <section class="mb-6">
+            <div class="flex-between mb-4">
+                <h2>Recommended for You</h2>
+                <a href="opportunities.html" class="btn btn-ghost btn-small">View all</a>
+            </div>
+            <div class="grid grid-2" id="recommendedOpportunities">
+                <!-- Populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Collapsible Sections -->
+        <section>
+            <h2 class="mb-4">Your Journey</h2>
+
+            <!-- Overview Section -->
+            <div class="collapsible open mb-3">
+                <div class="collapsible-header">
+                    <h3 class="collapsible-title">Overview</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <p id="overviewText" class="text-secondary">
+                            <!-- Populated by JavaScript -->
+                        </p>
+                        <div class="mt-3">
+                            <a href="guidance.html" class="btn btn-secondary">View Detailed Guidance</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Next Steps -->
+            <div class="collapsible mb-3">
+                <div class="collapsible-header">
+                    <h3 class="collapsible-title">Suggested Next Steps</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <ul class="checklist" id="nextStepsList">
+                            <!-- Populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    <h3 class="collapsible-title">Quick Links</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="flex flex-col flex-gap-2">
+                            <a href="community.html" class="btn btn-secondary">Join Community Discussions</a>
+                            <a href="resources.html" class="btn btn-secondary">Browse Resources</a>
+                            <a href="profile.html" class="btn btn-secondary">Update Your Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/interactions.js"></script>
+
+    <script>
+        // Check if onboarded
+        if (!FundMeState.isOnboarded()) {
+            window.location.href = 'index.html';
+        }
+
+        // Populate personalized content
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = FundMeState.getState();
+
+            // Welcome message
+            document.getElementById('welcomeMessage').textContent = FundMeState.getGreeting();
+            document.getElementById('userContext').textContent = `${state.domain} • ${state.state}`;
+
+            // Quick stats
+            document.getElementById('currentStage').textContent = FundMeState.getStageDisplay();
+            document.getElementById('targetFunding').textContent = FundMeState.getFundingRangeDisplay();
+
+            // Calculate eligible opportunities based on stage
+            const opportunityCount = calculateOpportunities(state.startupStage);
+            document.getElementById('opportunityCount').textContent = opportunityCount;
+
+            // Populate recommended opportunities
+            populateRecommendations(state);
+
+            // Populate overview
+            populateOverview(state);
+
+            // Populate next steps
+            populateNextSteps(state);
+        });
+
+        function calculateOpportunities(stage) {
+            const counts = {
+                'Idea': 12,
+                'Prototype': 18,
+                'Registered startup': 24,
+                'Early revenue': 31
+            };
+            return counts[stage] || 15;
+        }
+
+        function populateRecommendations(state) {
+            const container = document.getElementById('recommendedOpportunities');
+            const recommendations = getRecommendations(state);
+
+            container.innerHTML = recommendations.map(opp => `
+        <div class="card card-interactive" onclick="window.location.href='opportunities.html'">
+          <div class="card-title">${opp.name}</div>
+          <div class="card-description mb-3">${opp.description}</div>
+          <div class="card-footer">
+            <span class="tag tag-primary">${opp.amount}</span>
+            <span class="tag">${opp.type}</span>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        function getRecommendations(state) {
+            const stage = state.startupStage;
+
+            if (stage === 'Idea') {
+                return [
+                    {
+                        name: 'Smart India Hackathon',
+                        description: 'National-level innovation challenge for students with problem statements from government and industry',
+                        amount: '₹1L - ₹5L',
+                        type: 'Competition'
+                    },
+                    {
+                        name: 'University Innovation Programs',
+                        description: 'Seed funding and mentorship from your institution\'s innovation cell',
+                        amount: '₹50K - ₹2L',
+                        type: 'Grant'
+                    }
+                ];
+            } else if (stage === 'Prototype') {
+                return [
+                    {
+                        name: 'DPIIT Startup Recognition',
+                        description: 'Get recognized as a startup by the government to unlock tax benefits and grants',
+                        amount: 'Recognition',
+                        type: 'Government'
+                    },
+                    {
+                        name: 'NIDHI Prayas',
+                        description: 'Grant for prototyping innovative solutions with technical mentorship',
+                        amount: '₹10L',
+                        type: 'Grant'
+                    }
+                ];
+            } else if (stage === 'Registered startup') {
+                return [
+                    {
+                        name: 'SISFS (Startup India Seed Fund)',
+                        description: 'Government seed funding for DPIIT-recognized startups up to 2 years old',
+                        amount: '₹20L - ₹50L',
+                        type: 'Seed Fund'
+                    },
+                    {
+                        name: 'T-Hub Incubation',
+                        description: 'Access to India\'s largest startup incubator with funding and mentorship',
+                        amount: '₹25L - ₹50L',
+                        type: 'Incubator'
+                    }
+                ];
+            } else {
+                return [
+                    {
+                        name: 'Venture Capital Networks',
+                        description: 'Connect with early-stage VCs focused on your sector',
+                        amount: '₹1Cr - ₹5Cr',
+                        type: 'Investment'
+                    },
+                    {
+                        name: 'Strategic Accelerators',
+                        description: 'Industry-specific programs with corporate partnerships',
+                        amount: '₹50L - ₹2Cr',
+                        type: 'Accelerator'
+                    }
+                ];
+            }
+        }
+
+        function populateOverview(state) {
+            const overviewEl = document.getElementById('overviewText');
+            const stage = state.startupStage;
+
+            const overviews = {
+                'Idea': 'You\'re at the idea stage, which is perfect for exploring competitions, hackathons, and university programs. Focus on validating your concept and building initial prototypes before pursuing larger funding.',
+                'Prototype': 'With a prototype in development, you\'re ready to apply for grants and early-stage programs. Consider getting DPIIT recognition to unlock government schemes.',
+                'Registered startup': 'As a registered entity, you have access to significant government programs like SISFS and incubator support. Registration is a key milestone that opens many doors.',
+                'Early revenue': 'With early revenue, you\'re positioned for accelerators and seed investment. Focus on demonstrating traction and product-market fit.'
+            };
+
+            overviewEl.textContent = overviews[stage] || 'Complete your profile to get personalized guidance.';
+        }
+
+        function populateNextSteps(state) {
+            const listEl = document.getElementById('nextStepsList');
+            const steps = getNextSteps(state);
+
+            listEl.innerHTML = steps.map(step => `
+        <li class="checklist-item">
+          <span class="checklist-icon check">✓</span>
+          <span>${step}</span>
+        </li>
+      `).join('');
+        }
+
+        function getNextSteps(state) {
+            const stage = state.startupStage;
+
+            const steps = {
+                'Idea': [
+                    'Research competitions and hackathons in your domain',
+                    'Build a basic prototype or proof of concept',
+                    'Connect with mentors through university innovation cells',
+                    'Validate your idea with potential users'
+                ],
+                'Prototype': [
+                    'Apply for DPIIT startup recognition',
+                    'Explore prototype grants like NIDHI Prayas',
+                    'Document your technical progress and learnings',
+                    'Consider incorporating as a legal entity'
+                ],
+                'Registered startup': [
+                    'Submit SISFS application if eligible (less than 2 years old)',
+                    'Apply to relevant incubators in your geography',
+                    'Build financial projections and pitch deck',
+                    'Network with other founders in accelerator programs'
+                ],
+                'Early revenue': [
+                    'Prepare detailed metrics and traction data',
+                    'Research sector-specific VCs and accelerators',
+                    'Refine your unit economics and business model',
+                    'Build relationships with potential investors'
+                ]
+            };
+
+            return steps[stage] || [];
+        }
+    </script>
+</body>
+
+</html>

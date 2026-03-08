@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Curated learning resources for startup founders">
+<title>Learning Resources - FundMe</title>
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/components.css">
+
+</head>
+
+<body>
+
+<main class="container section">
+
+<div class="container-narrow">
+
+<div class="mb-6">
+<h1>Learning Resources</h1>
+
+<p class="text-lg text-secondary">
+Curated external materials for structured learning. FundMe does not own or produce this content.
+</p>
+
+<p class="text-sm text-muted mt-2"
+style="border-left:2px solid var(--color-border); padding-left:var(--space-2);">
+
+Recommended resources for self-directed study. Links point to external sources including government portals,
+institutional publications, and educational platforms.
+
+</p>
+</div>
+
+
+<!-- Startup Fundamentals -->
+<div class="collapsible open mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Startup Fundamentals</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<ul class="checklist" id="startup-fundamentals"></ul>
+
+</div>
+</div>
+</div>
+
+
+<!-- Product Validation -->
+<div class="collapsible open mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Product Validation & Research Methods</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<ul class="checklist" id="product-validation"></ul>
+
+</div>
+</div>
+</div>
+
+
+<!-- Domain Study -->
+<div class="collapsible open mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Domain-Specific Study</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<div class="grid" id="domain-study" style="gap:var(--space-3);"></div>
+
+</div>
+</div>
+</div>
+
+
+<!-- Grants -->
+<div class="collapsible open mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Grants & Policy Literacy</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<ul class="checklist" id="policy-literacy"></ul>
+
+</div>
+</div>
+</div>
+
+
+<!-- Fundraising -->
+<div class="collapsible mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Fundraising & Investor Relations</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<ul class="checklist" id="fundraising"></ul>
+
+</div>
+</div>
+</div>
+
+
+<!-- Legal -->
+<div class="collapsible mb-3">
+
+<div class="collapsible-header">
+<h2 class="collapsible-title">Legal & Compliance</h2>
+<span class="collapsible-icon">▼</span>
+</div>
+
+<div class="collapsible-content">
+<div class="collapsible-body">
+
+<ul class="checklist" id="legal"></ul>
+
+</div>
+</div>
+</div>
+
+</div>
+</main>
+
+<script src="js/state.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/interactions.js"></script>
+
+
+<script>
+
+if(!FundMeState.isOnboarded()){
+window.location.href="index.html";
+}
+
+
+async function loadResources(){
+
+try{
+
+const response = await fetch("http://localhost:5000/resources");
+
+const resources = await response.json();
+
+
+resources.forEach(resource => {
+
+const item = `
+<li class="checklist-item">
+<span class="checklist-icon">•</span>
+<span>
+<strong>
+<a href="${resource.link}" target="_blank">
+${resource.title}
+</a>
+</strong> — ${resource.description}
+</span>
+</li>
+`;
+
+
+if(resource.category==="Startup Fundamentals"){
+document.getElementById("startup-fundamentals").innerHTML += item;
+}
+
+else if(resource.category==="Product Validation"){
+document.getElementById("product-validation").innerHTML += item;
+}
+
+else if(resource.category==="Grants & Policy Literacy"){
+document.getElementById("policy-literacy").innerHTML += item;
+}
+
+else if(resource.category==="Fundraising"){
+document.getElementById("fundraising").innerHTML += item;
+}
+
+else if(resource.category==="Legal & Compliance"){
+document.getElementById("legal").innerHTML += item;
+}
+
+else if(resource.category==="Domain Study"){
+
+document.getElementById("domain-study").innerHTML += `
+
+<div class="card">
+
+<div class="card-title">
+${resource.title}
+</div>
+
+<div class="card-description mb-2">
+${resource.description}
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+
+}catch(error){
+
+console.error("Error loading resources:",error);
+
+}
+
+}
+
+
+document.addEventListener("DOMContentLoaded",loadResources);
+
+</script>
+
+</body>
+
+</html>

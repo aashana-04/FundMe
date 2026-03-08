@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your FundMe profile and preferences">
+    <title>Profile - FundMe</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+
+    <main class="container section">
+        <div class="container-narrow">
+            <!-- Header -->
+            <div class="mb-6">
+                <h1>Your Profile</h1>
+                <p class="text-lg text-secondary">
+                    Update your preferences to get better recommendations
+                </p>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="card">
+                <form id="profileForm">
+                    <!-- Primary Intent -->
+                    <div class="form-group">
+                        <label class="form-label">Primary Intent</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="primaryIntent" value="Build a startup">
+                                <div>
+                                    <div class="font-medium">Build a startup</div>
+                                    <div class="text-sm text-muted">I want to build and scale a venture</div>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="primaryIntent"
+                                    value="Explore student innovation opportunities">
+                                <div>
+                                    <div class="font-medium">Explore student innovation opportunities</div>
+                                    <div class="text-sm text-muted">I want to explore programs and competitions</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Student Status -->
+                    <div class="form-group">
+                        <label class="form-label">Are you currently a student?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="isStudent" value="yes">
+                                <div class="font-medium">Yes</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="isStudent" value="no">
+                                <div class="font-medium">No</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Startup Stage -->
+                    <div class="form-group">
+                        <label class="form-label">Startup Stage</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="startupStage" value="Idea">
+                                <div class="font-medium">Idea</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="startupStage" value="Prototype">
+                                <div class="font-medium">Prototype</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="startupStage" value="Registered startup">
+                                <div class="font-medium">Registered startup</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="startupStage" value="Early revenue">
+                                <div class="font-medium">Early revenue</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Domain -->
+                    <div class="form-group">
+                        <label class="form-label" for="domain">Domain / Sector</label>
+                        <select id="domain" name="domain" class="form-select">
+                            <option value="">Select domain</option>
+                            <option value="Technology & Software">Technology & Software</option>
+                            <option value="E-commerce & Retail">E-commerce & Retail</option>
+                            <option value="Healthcare & Biotech">Healthcare & Biotech</option>
+                            <option value="Education & EdTech">Education & EdTech</option>
+                            <option value="Finance & FinTech">Finance & FinTech</option>
+                            <option value="Agriculture & AgriTech">Agriculture & AgriTech</option>
+                            <option value="Clean Energy & Sustainability">Clean Energy & Sustainability</option>
+                            <option value="Manufacturing & Industry">Manufacturing & Industry</option>
+                            <option value="Consumer Products">Consumer Products</option>
+                            <option value="Media & Entertainment">Media & Entertainment</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Geography -->
+                    <div class="form-group">
+                        <label class="form-label" for="state">State</label>
+                        <select id="state" name="state" class="form-select">
+                            <option value="">Select state</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Puducherry">Puducherry</option>
+                        </select>
+                    </div>
+
+                    <!-- Funding Range -->
+                    <div class="form-group">
+                        <label class="form-label">Target Funding Range</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="fundingRange" value="< ₹5L">
+                                <div class="font-medium">
+                                    < ₹5 Lakh</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="fundingRange" value="₹5L – ₹25L">
+                                <div class="font-medium">₹5 Lakh – ₹25 Lakh</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="fundingRange" value="₹25L – ₹1 Cr">
+                                <div class="font-medium">₹25 Lakh – ₹1 Crore</div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="fundingRange" value="₹1 Cr – ₹10 Cr">
+                                <div class="font-medium">₹1 Crore – ₹10 Crore</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex-between mt-6">
+                        <button type="button" class="btn btn-ghost"
+                            onclick="window.location.href='home.html'">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-large">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Data Management -->
+            <div class="mt-8">
+                <h3 class="mb-3">Data Management</h3>
+                <div class="card">
+                    <p class="text-sm text-secondary mb-3">
+                        Your preferences are stored locally in your browser. Clearing your browser data will reset your
+                        profile.
+                    </p>
+                    <button class="btn btn-secondary" onclick="resetProfile()">Reset All Preferences</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/interactions.js"></script>
+
+    <script>
+        // Check if onboarded
+        if (!FundMeState.isOnboarded()) {
+            window.location.href = 'index.html';
+        }
+
+        // Load current state into form
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = FundMeState.getState();
+
+            // Set radio buttons
+            document.querySelector(`input[name="primaryIntent"][value="${state.primaryIntent}"]`)?.setAttribute('checked', 'checked');
+            document.querySelector(`input[name="isStudent"][value="${state.isStudent ? 'yes' : 'no'}"]`)?.setAttribute('checked', 'checked');
+            document.querySelector(`input[name="startupStage"][value="${state.startupStage}"]`)?.setAttribute('checked', 'checked');
+            document.querySelector(`input[name="fundingRange"][value="${state.fundingRange}"]`)?.setAttribute('checked', 'checked');
+
+            // Set dropdowns
+            document.getElementById('domain').value = state.domain;
+            document.getElementById('state').value = state.state;
+        });
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const updates = {
+                primaryIntent: formData.get('primaryIntent'),
+                isStudent: formData.get('isStudent') === 'yes',
+                startupStage: formData.get('startupStage'),
+                domain: formData.get('domain'),
+                state: formData.get('state'),
+                fundingRange: formData.get('fundingRange')
+            };
+
+            // Update state
+            FundMeState.update(updates);
+
+            // Show success message and redirect
+            alert('Profile updated successfully! Your recommendations will now reflect these changes.');
+            window.location.href = 'home.html';
+        });
+
+        function resetProfile() {
+            if (confirm('Are you sure you want to reset all your preferences? This will clear your onboarding data.')) {
+                FundMeState.reset();
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

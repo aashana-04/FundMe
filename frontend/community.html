@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Anonymous community discussions for founders and students">
+<title>Community - FundMe</title>
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/components.css">
+
+<style>
+
+.post-card{
+background-color:var(--color-bg-primary);
+border:1px solid var(--color-border);
+border-radius:var(--radius-lg);
+padding:var(--space-4);
+margin-bottom:var(--space-3);
+}
+
+.post-question{
+font-size:var(--font-size-base);
+font-weight:var(--font-weight-medium);
+margin-bottom:var(--space-2);
+}
+
+.post-meta{
+display:flex;
+gap:var(--space-3);
+align-items:center;
+margin-top:var(--space-3);
+padding-top:var(--space-3);
+border-top:1px solid var(--color-border-light);
+}
+
+.vote-button{
+display:flex;
+align-items:center;
+gap:var(--space-1);
+padding:6px 10px;
+border:1px solid var(--color-border);
+border-radius:6px;
+cursor:pointer;
+}
+
+.replies-section{
+margin-top:15px;
+background:#f6f6f6;
+padding:12px;
+border-radius:8px;
+}
+
+.reply-item{
+padding:8px 0;
+border-bottom:1px solid #ddd;
+}
+
+.reply-item:last-child{
+border-bottom:none;
+}
+
+.anonymous-badge{
+display:inline-block;
+padding:4px 8px;
+background:#eee;
+border-radius:6px;
+font-size:12px;
+color:#666;
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="container section">
+<div class="container-narrow">
+
+<h1>Community</h1>
+<p class="text-lg text-secondary">
+Anonymous discussions with fellow founders and students
+</p>
+
+<div class="card mb-6">
+
+<h3>Ask a Question</h3>
+
+<textarea
+id="questionInput"
+class="form-textarea"
+placeholder="Ask something anonymously..."
+></textarea>
+
+<button
+class="btn btn-primary mt-3"
+onclick="postQuestion()"
+>
+Post Question
+</button>
+
+</div>
+
+<div id="discussionPosts"></div>
+
+</div>
+</main>
+
+<script src="js/state.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/interactions.js"></script>
+
+<script>
+
+if(!FundMeState.isOnboarded()){
+window.location.href="index.html";
+}
+
+/* ---------------- LOAD POSTS ---------------- */
+
+async function loadPosts(){
+
+try{
+
+const response = await fetch("http://localhost:5000/community");
+const posts = await response.json();
+
+const container=document.getElementById("discussionPosts");
+
+container.innerHTML = posts.map(post => `
+
+<div class="post-card">
+
+<div class="anonymous-badge">Anonymous</div>
+
+<div class="post-question mt-2">
+${post.content}
+</div>
+
+<div class="post-meta">
+
+<button class="vote-button" onclick="upvotePost('${post._id}')">
+↑ ${post.upvotes}
+</button>
+
+<span class="text-xs text-muted">
+${new Date(post.createdAt).toLocaleString()}
+</span>
+
+</div>
+
+<div class="replies-section">
+
+${post.replies.map(reply => `
+<div class="reply-item">
+<div class="anonymous-badge">Anonymous</div>
+<p>${reply.content}</p>
+</div>
+`).join("")}
+
+<textarea
+id="reply-${post._id}"
+class="form-textarea mt-3"
+placeholder="Write a reply..."
+></textarea>
+
+<button
+class="btn btn-secondary mt-2"
+onclick="addReply('${post._id}')"
+>
+Post Reply
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}catch(error){
+
+console.error("Error loading posts:",error);
+
+}
+
+}
+
+/* ---------------- POST QUESTION ---------------- */
+
+async function postQuestion(){
+
+const content=document.getElementById("questionInput").value;
+
+if(!content){
+alert("Please enter a question");
+return;
+}
+
+try{
+
+await fetch("http://localhost:5000/community",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({content})
+});
+
+document.getElementById("questionInput").value="";
+
+loadPosts();
+
+}catch(error){
+
+console.error("Error posting question:",error);
+
+}
+
+}
+
+/* ---------------- UPVOTE ---------------- */
+
+async function upvotePost(postId){
+
+try{
+
+await fetch(`http://localhost:5000/community/${postId}/upvote`,{
+method:"POST"
+});
+
+loadPosts();
+
+}catch(error){
+
+console.error("Error upvoting:",error);
+
+}
+
+}
+
+/* ---------------- ADD REPLY ---------------- */
+
+async function addReply(postId){
+
+const replyInput=document.getElementById(`reply-${postId}`);
+const content=replyInput.value;
+
+if(!content){
+alert("Write a reply first");
+return;
+}
+
+try{
+
+await fetch(`http://localhost:5000/community/${postId}/reply`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({content})
+});
+
+replyInput.value="";
+
+loadPosts();
+
+}catch(error){
+
+console.error("Error replying:",error);
+
+}
+
+}
+
+/* ---------------- INIT ---------------- */
+
+document.addEventListener("DOMContentLoaded",loadPosts);
+
+</script>
+
+</body>
+</html>
