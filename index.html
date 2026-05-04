@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FundMe | Founder Execution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Linear/Stripe-esque precise palette */
+            --bg-base: #0A0F2C;
+            --bg-surface: #131929;
+            --bg-surface-hover: #1c2438;
+            --accent-violet: #6C63FF;
+            --accent-violet-hover: #5b54d6;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: #2e364f;
+            
+            /* Typography */
+            --font-family: 'Inter', sans-serif;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Reusable Classes */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .btn {
+            background: var(--accent-violet);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background: var(--accent-violet-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-field {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.85rem 1rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+            resize: none;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-violet);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: rgba(148, 163, 184, 0.4);
+        }
+
+        /* Screens Management */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateY(10px);
+            flex: 1;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ---- Landing Page ---- */
+        #landing {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #landing .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: absolute;
+            top: 2.5rem;
+            left: 3rem;
+            color: var(--text-main);
+        }
+
+        #landing h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            line-height: 1.05;
+        }
+
+        #landing p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 580px;
+            margin: 0 auto 3rem;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        /* ---- Onboarding Wizard ---- */
+        #onboarding {
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            min-height: 100vh;
+        }
+
+        .wizard-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 540px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-bar-bg {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            margin-bottom: 2.5rem;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-violet);
+            width: 16.66%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .wizard-step h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .wizard-step p.step-desc {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        .wizard-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---- Founder Profile ---- */
+        #profile {
+            padding: 3rem 0;
+        }
+
+        .profile-header {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        
+        .profile-header p {
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .insight-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .insight-card h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-violet);
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+        }
+
+        .insight-card p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .insight-list {
+            list-style: none;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .insight-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .insight-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        .actions-highlight {
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 8px;
+            background: linear-gradient(180deg, rgba(108, 99, 255, 0.03) 0%, transparent 100%);
+        }
+
+        .actions-highlight h3 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .action-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-item:hover {
+            transform: translateX(4px);
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .action-number {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--accent-violet);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .action-text {
+            flex: 1;
+            font-weight: 400;
+            font-size: 1rem;
+            color: var(--text-main);
+            padding-right: 1.5rem;
+        }
+
+        /* ---- Dashboard & Tracker ---- */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2.5rem;
+            margin-top: 3rem;
+            align-items: start;
+        }
+
+        .tracker-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .tracker-panel h3 {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .tracker-panel h3 span {
+            background: var(--bg-base);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+        }
+
+        .task-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--text-muted);
+            border-radius: 4px;
+            margin-top: 2px;
+            transition: all 0.2s;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .task-item.done .task-checkbox {
+            background: var(--accent-violet);
+            border-color: var(--accent-violet);
+        }
+        
+        .task-item.done .task-checkbox::after {
+            content: "";
+            position: absolute;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            top: 2px;
+            left: 5px;
+            transform: rotate(45deg);
+        }
+
+        .task-item.done .task-content {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .task-content {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            transition: color 0.2s;
+        }
+
+        /* ---- Outreach Builder ---- */
+        .outreach-builder {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            min-height: 540px;
+            overflow: hidden;
+        }
+
+        .outreach-settings {
+            padding: 2.5rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .outreach-settings h2 {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .target-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .target-btn {
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .target-btn:hover {
+            border-color: rgba(108, 99, 255, 0.3);
+        }
+
+        .target-btn.active {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--accent-violet);
+            border-color: var(--accent-violet);
+        }
+
+        .outreach-preview {
+            padding: 2.5rem;
+            background: #0d1221;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-box {
+            background: var(--bg-base);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            flex: 1;
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--text-muted);
+        }
+
+        /* Top Nav */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 3rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-base);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .top-nav .nav-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .top-nav .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .top-nav .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .top-nav .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        .top-nav .nav-links a.active {
+            color: var(--text-main);
+            border-bottom-color: var(--accent-violet);
+        }
+
+        /* Option Cards (for Exposure step) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .option-card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .option-card:hover {
+            border-color: rgba(108, 99, 255, 0.4);
+            color: var(--text-main);
+        }
+
+        .option-card.selected {
+            border-color: var(--accent-violet);
+            background: rgba(108, 99, 255, 0.05);
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Landing Screen -->
+    <section id="landing" class="screen active">
+        <div class="logo">FundMe.</div>
+        <div class="container" style="max-width: 800px;">
+            <h1>Stop thinking.<br>Start executing.</h1>
+            <p>The definitive OS for student founders. Gain immediate clarity, leverage your existing network, and ship your product faster.</p>
+            <button class="btn" style="padding: 1rem 2.5rem; font-size: 1.05rem;" onclick="app.startOnboarding()">Start Now</button>
+        </div>
+    </section>
+
+    <!-- Onboarding Wizard -->
+    <section id="onboarding" class="screen">
+        <div class="wizard-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            
+            <!-- Step 1: Identity -->
+            <div class="wizard-step active" id="step-1">
+                <h2>Who are you?</h2>
+                <p class="step-desc">Let's build your foundational profile.</p>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" class="input-field" placeholder="e.g. Alex Chen" id="u_name">
+                </div>
+                <div class="input-group">
+                    <label>University</label>
+                    <input type="text" class="input-field" placeholder="e.g. Stanford University" id="u_uni">
+                </div>
+                <div class="input-group">
+                    <label>Major / Course</label>
+                    <input type="text" class="input-field" placeholder="e.g. Computer Science" id="u_major">
+                </div>
+                <div class="input-group">
+                    <label>Graduation Year</label>
+                    <input type="text" class="input-field" placeholder="e.g. 2026" id="u_year">
+                </div>
+            </div>
+
+            <!-- Step 2: Links -->
+            <div class="wizard-step" id="step-2">
+                <h2>Digital Footprint</h2>
+                <p class="step-desc">Where can people find your work?</p>
+                <div class="input-group">
+                    <label>LinkedIn URL</label>
+                    <input type="text" class="input-field" placeholder="linkedin.com/in/..." id="u_linkedin">
+                </div>
+                <div class="input-group">
+                    <label>GitHub or Portfolio</label>
+                    <input type="text" class="input-field" placeholder="github.com/..." id="u_github">
+                </div>
+                <div class="input-group">
+                    <label>X (Twitter)</label>
+                    <input type="text" class="input-field" placeholder="@username" id="u_twitter">
+                </div>
+            </div>
+
+            <!-- Step 3: Exposure -->
+            <div class="wizard-step" id="step-3">
+                <h2>Current Exposure</h2>
+                <p class="step-desc">What areas are you most plugged into?</p>
+                <div class="options-grid" id="exposure_opts">
+                    <div class="option-card" onclick="app.toggleOption(this)">Artificial Intelligence</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">SaaS / Enterprise</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">Consumer Social</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">Hardware / Robotics</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">Fintech</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">E-Commerce</div>
+                </div>
+            </div>
+
+            <!-- Step 4: Network -->
+            <div class="wizard-step" id="step-4">
+                <h2>Network Reality</h2>
+                <p class="step-desc">Who can you reasonably get a coffee with next week?</p>
+                <div class="input-group">
+                    <label>Professors / TAs</label>
+                    <input type="text" class="input-field" placeholder="e.g. ML systems professor">
+                </div>
+                <div class="input-group">
+                    <label>Industry Connections</label>
+                    <input type="text" class="input-field" placeholder="e.g. Google SWE alumnus">
+                </div>
+                <div class="input-group">
+                    <label>Peer Network</label>
+                    <input type="text" class="input-field" placeholder="e.g. Hackathon teammates">
+                </div>
+            </div>
+
+            <!-- Step 5: Behaviour -->
+            <div class="wizard-step" id="step-5">
+                <h2>Past Velocity</h2>
+                <p class="step-desc">What's the most impressive thing you've built or done?</p>
+                <div class="input-group">
+                    <textarea class="input-field" rows="5" placeholder="e.g. Built a campus delivery app that hit 500 WAUs in a week, previously interned at Stripe scaling payment pipelines..."></textarea>
+                </div>
+            </div>
+
+            <!-- Step 6: Constraints -->
+            <div class="wizard-step" id="step-6">
+                <h2>Your Bottleneck</h2>
+                <p class="step-desc">What's stopping you from launching today?</p>
+                <div class="options-grid">
+                    <div class="option-card" onclick="app.toggleOption(this)">I need a technical co-founder</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">I don't have validation</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">I don't know what to build</div>
+                    <div class="option-card" onclick="app.toggleOption(this)">I need initial capital</div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="wizard-controls">
+                <button class="btn btn-secondary" id="btn-prev" onclick="app.prevStep()" style="visibility: hidden;">Back</button>
+                <button class="btn" id="btn-next" onclick="app.nextStep()">Continue</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Shell (Navigation for Profile & Dashboard) -->
+    <div id="app-shell" class="screen" style="display:none; opacity:0;">
+        <nav class="top-nav">
+            <div class="nav-brand">FundMe.</div>
+            <div class="nav-links">
+                <a onclick="app.switchTab('profile')" id="tab-profile" class="active">Founder Profile</a>
+                <a onclick="app.switchTab('dashboard')" id="tab-dashboard">Action Engine</a>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Profile Tab -->
+            <div id="tab-content-profile" class="tab-content">
+                <div id="profile" class="inner-screen active">
+                    <div class="profile-header">
+                        <div>
+                            <h1 id="out_name">Alexander Chen</h1>
+                            <p id="out_uni">Stanford University • Class of 2026</p>
+                        </div>
+                        <button class="btn" onclick="app.switchTab('dashboard')">Execute Now</button>
+                    </div>
+
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <h3>Your Positioning</h3>
+                            <p>You have strong technical chops but lack a structured distribution channel. Your connection to AI research professors gives you access to cutting-edge IP, but you need to translate that into a consumer-facing workflow.</p>
+                        </div>
+                        <div class="insight-card">
+                            <h3>Your Unfair Advantages</h3>
+                            <ul class="insight-list">
+                                <li>Direct access to top-tier ML faculty</li>
+                                <li>Low-cost campus testing environment</li>
+                                <li>High-velocity prototyping history</li>
+                            </ul>
+                        </div>
+                        <div class="insight-card">
+                            <h3>Where You Should Focus</h3>
+                            <p>Stop thinking about massive enterprise SaaS. Focus on prosumer tools for students and researchers. You can validate a paid tool within 7 days by charging your peers.</p>
+                        </div>
+                        <div class="insight-card">
+                            <h3 style="color: #f43f5e;">Your Blind Spots</h3>
+                            <ul class="insight-list">
+                                <li>Over-engineering before validating</li>
+                                <li>Waiting for a "perfect" co-founder</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="actions-highlight">
+                        <h3>Immediate Mandates</h3>
+                        <div class="action-item">
+                            <div class="action-number">1</div>
+                            <div class="action-text">Draft a 2-line validation email to your ML Professor seeking advisor status.</div>
+                            <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="app.switchTab('dashboard', 'prof')">Draft</button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-number">2</div>
+                            <div class="action-text">Create a simple waitlist landing page for the AI note-taking concept.</div>
+                            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Done</button>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-number">3</div>
+                            <div class="action-text">DM 5 hackathon peers to form a weekend alpha-testing group.</div>
+                            <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="app.switchTab('dashboard', 'peer')">Draft</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="tab-content-dashboard" class="tab-content" style="display:none;">
+                <div class="dashboard-layout">
+                    <!-- Tracker -->
+                    <div class="tracker-panel">
+                        <h3>Traction Tracker <span id="tracker-count">0/3</span></h3>
+                        <ul class="task-list">
+                            <li class="task-item" onclick="app.toggleTask(this)">
+                                <div class="task-checkbox"></div>
+                                <div class="task-content">Message Prof. Henderson about advisor role</div>
+                            </li>
+                            <li class="task-item" onclick="app.toggleTask(this)">
+                                <div class="task-checkbox"></div>
+                                <div class="task-content">Ship waitlist MVP to Hacker News</div>
+                            </li>
+                            <li class="task-item" onclick="app.toggleTask(this)">
+                                <div class="task-checkbox"></div>
+                                <div class="task-content">Secure 5 alpha testers from cohort</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Outreach Builder -->
+                    <div class="outreach-builder">
+                        <div class="outreach-settings">
+                            <h2>Outreach Engine</h2>
+                            <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.75rem; font-weight: 500;">Target Recipient</label>
+                            <div class="target-selector">
+                                <button class="target-btn active" onclick="app.setTarget('Professor', this)">Professor</button>
+                                <button class="target-btn" onclick="app.setTarget('Alumni Founder', this)">Alumni Founder</button>
+                                <button class="target-btn" onclick="app.setTarget('Peer', this)">Peer</button>
+                                <button class="target-btn" onclick="app.setTarget('Investor', this)">Investor</button>
+                            </div>
+
+                            <div class="input-group" style="margin-top: 2rem;">
+                                <label>What is your specific ask?</label>
+                                <textarea class="input-field" id="outreach_context" rows="4" placeholder="e.g. I want brutal feedback on my workflow tool from someone who has shipped in this space."></textarea>
+                            </div>
+                            
+                            <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="app.generateOutreach()">Generate Draft</button>
+                        </div>
+                        <div class="outreach-preview">
+                            <h3 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Generated Output</h3>
+                            <div class="message-box" id="message_box_container">
+                                <button class="copy-btn" onclick="app.copyText(this)">Copy</button>
+                                <div id="message_output" style="color: #64748b;">Select a target and context to generate a decisive, non-fluffy outreach message.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            currentStep: 1,
+            totalSteps: 6,
+            userData: {},
+            currentTarget: 'Professor',
+
+            startOnboarding: () => {
+                const landing = document.getElementById('landing');
+                landing.style.opacity = '0';
+                setTimeout(() => {
+                    landing.classList.remove('active');
+                    landing.style.display = 'none';
+                    
+                    const ob = document.getElementById('onboarding');
+                    ob.style.display = 'flex';
+                    // Trigger reflow
+                    void ob.offsetWidth;
+                    ob.classList.add('active');
+                    ob.style.opacity = '1';
+                }, 400);
+            },
+
+            toggleOption: (el) => {
+                el.classList.toggle('selected');
+            },
+
+            prevStep: () => {
+                if (app.currentStep > 1) {
+                    document.getElementById(`step-${app.currentStep}`).classList.remove('active');
+                    app.currentStep--;
+                    document.getElementById(`step-${app.currentStep}`).classList.add('active');
+                    app.updateWizardUI();
+                }
+            },
+
+            nextStep: () => {
+                if (app.currentStep < app.totalSteps) {
+                    // Save local form data on step 1
+                    if (app.currentStep === 1) {
+                        app.userData.name = document.getElementById('u_name').value.trim() || 'Founder';
+                        const uni = document.getElementById('u_uni').value.trim() || 'University';
+                        const year = document.getElementById('u_year').value.trim() || '2025';
+                        app.userData.uni = `${uni} • Class of ${year}`;
+                    }
+
+                    document.getElementById(`step-${app.currentStep}`).classList.remove('active');
+                    app.currentStep++;
+                    document.getElementById(`step-${app.currentStep}`).classList.add('active');
+                    app.updateWizardUI();
+                } else {
+                    app.finishOnboarding();
+                }
+            },
+
+            updateWizardUI: () => {
+                const perc = (app.currentStep / app.totalSteps) * 100;
+                document.getElementById('progress-fill').style.width = `${perc}%`;
+                
+                document.getElementById('btn-prev').style.visibility = app.currentStep > 1 ? 'visible' : 'hidden';
+                document.getElementById('btn-next').innerText = app.currentStep === app.totalSteps ? 'Generate Insights' : 'Continue';
+            },
+
+            finishOnboarding: () => {
+                // Populate Profile Data from initial inputs
+                document.getElementById('out_name').innerText = app.userData.name || 'Student Founder';
+                document.getElementById('out_uni').innerText = app.userData.uni || 'University';
+
+                const ob = document.getElementById('onboarding');
+                ob.style.opacity = '0';
+                
+                setTimeout(() => {
+                    ob.classList.remove('active');
+                    ob.style.display = 'none';
+                    
+                    const shell = document.getElementById('app-shell');
+                    shell.style.display = 'block';
+                    // Trigger reflow
+                    void shell.offsetWidth;
+                    shell.style.opacity = '1';
+                    shell.classList.add('active');
+                }, 400);
+            },
+
+            switchTab: (tab, forceTarget = null) => {
+                // Handle nav links
+                document.querySelectorAll('.top-nav .nav-links a').forEach(a => a.classList.remove('active'));
+                document.getElementById(`tab-${tab}`).classList.add('active');
+                
+                // Hide all tabs, show targeted
+                document.querySelectorAll('.tab-content').forEach(c => {
+                    c.style.display = 'none';
+                    c.style.opacity = '0';
+                });
+                
+                const targetTab = document.getElementById(`tab-content-${tab}`);
+                targetTab.style.display = 'block';
+                // Reflow
+                void targetTab.offsetWidth;
+                targetTab.style.opacity = '1';
+
+                // Automatically pre-fill intent to builders if routed from Profile dashboard
+                if (tab === 'dashboard' && forceTarget) {
+                    const btns = document.querySelectorAll('.target-btn');
+                    btns.forEach(b => {
+                        if (
+                            (forceTarget === 'prof' && b.innerText === 'Professor') ||
+                            (forceTarget === 'peer' && b.innerText === 'Peer')
+                        ) {
+                            b.click();
+                        }
+                    });
+                }
+            },
+
+            toggleTask: (el) => {
+                el.classList.toggle('done');
+                const total = document.querySelectorAll('.task-item').length;
+                const done = document.querySelectorAll('.task-item.done').length;
+                document.getElementById('tracker-count').innerText = `${done}/${total}`;
+            },
+
+            setTarget: (targetStr, btnEl) => {
+                document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+                btnEl.classList.add('active');
+                app.currentTarget = targetStr;
+            },
+
+            generateOutreach: () => {
+                const context = document.getElementById('outreach_context').value.trim();
+                const target = app.currentTarget;
+                const outEl = document.getElementById('message_output');
+                
+                outEl.style.color = '#cbd5e1';
+                outEl.innerHTML = `<span style="opacity:0.5;">Compiling contextual framework...</span>`;
+                
+                setTimeout(() => {
+                    let msg = '';
+                    if (target === 'Professor') {
+                        msg = `Subject: Quick question on applied ML architecture\n\nHi Professor,\n\nI'm a student here prototyping a workflow execution tool running on concepts outlined in your recent agent architecture paper.\n\nI have a hard bottleneck regarding state management that I suspect you or your grad students have solved. ${context ? "\\n\\nSpecifically: " + context + "." : ""}\n\nCould I buy you a 15-minute coffee this week for brutal feedback on my approach? I will not waste your time.\n\nBest,\n${app.userData.name || 'Founder'}`;
+                    } else if (target === 'Alumni Founder') {
+                        msg = `Subject: Stanford founder iterating on your early GTM\n\nHey,\n\nI'm currently building at ${app.userData.uni ? app.userData.uni.split(' ')[0] : 'campus'} and admire the sheer velocity your team had during your YC batch.\n\nWe are facing a similar distribution hurdle right now. ${context ? "\\n\\nContext: " + context + "." : "Looking to validate whether doing things that don't scale is viable in our specific subset."}\n\nDo you have 10 minutes this Friday for a rapid teardown of our GTM? No pleasantries needed, just looking for sharp truth.\n\nCheers,\n${app.userData.name || 'Founder'}`;
+                    } else if (target === 'Investor') {
+                        msg = `Subject: Pre-seed AI workflow tool (growing 15% WoW)\n\nHi,\n\nI noticed you led the seed round for Acme Corp. We are building the adjacent prosumer tool for that exact demographic.\n\n${context ? context + "\\n\\n" : "We just crossed $1k MRR with 0 marketing spend."}I'm not raising right now, but I want to put us on your radar for when we open our seed in Q3.\n\nCan I send you our monthly updates?\n\nBest,\n${app.userData.name || 'Founder'}`;
+                    } else { // Peer
+                        msg = `Hey man, loved the demo you gave at the AI hackathon last month.\n\nI'm assembling an aggressive, high-velocity alpha test group for a new tool this weekend. ${context ? "\\n\\nContext: " + context + "." : ""}\n\nIt's raw and it might break, but I need incredibly sharp technical users to tear it apart. You down to test it?`;
+                    }
+                    outEl.innerText = msg;
+                }, 500);
+            },
+
+            copyText: (btn) => {
+                const text = document.getElementById('message_output').innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.innerText = 'Copied!';
+                    setTimeout(() => { btn.innerText = 'Copy'; }, 2000);
+                });
+            }
+        };
+    </script>
+</body>
+</html>
