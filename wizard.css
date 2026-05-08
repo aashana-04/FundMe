@@ -1,0 +1,390 @@
+/* ============================================================
+   WIZARD.CSS — Multi-step onboarding wizard styles
+   Redesigned: Premium calm dark aesthetic
+   ============================================================ */
+
+/* ── Layout ── */
+#screen-wizard {
+  flex-direction: row;
+  min-height: 100vh;
+  background: var(--bg-void);
+}
+
+.wizard-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.wizard-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #0c0c0f;
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-8) var(--space-6);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-10);
+}
+
+.sidebar-steps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sidebar-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  cursor: default;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.sidebar-step-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-step-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.sidebar-step-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  transition: color var(--transition-fast);
+  opacity: 0.5;
+}
+
+/* States */
+.sidebar-step.completed .sidebar-step-number {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: var(--accent-green);
+}
+
+.sidebar-step.completed .sidebar-step-title {
+  color: var(--text-secondary);
+}
+
+.sidebar-step.active {
+  background: rgba(129, 140, 248, 0.07);
+}
+
+.sidebar-step.active .sidebar-step-number {
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.4);
+  color: var(--accent-primary);
+}
+
+.sidebar-step.active .sidebar-step-title {
+  color: var(--text-primary);
+}
+
+.sidebar-step.active .sidebar-step-sub {
+  color: var(--accent-primary);
+  opacity: 0.65;
+}
+
+.sidebar-footer {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sidebar-footer p {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Main wizard area ── */
+.wizard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+}
+
+/* ── Progress bar ── */
+.wizard-header {
+  padding: var(--space-6) 0 var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.progress-bar-track {
+  height: 2px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+  width: 0%;
+  opacity: 0.8;
+}
+
+.progress-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+/* ── Wizard body ── */
+.wizard-body {
+  flex: 1;
+  padding: var(--space-6) 0;
+  overflow: hidden;
+}
+
+#wizard-steps-container {
+  position: relative;
+}
+
+/* ── Step panel ── */
+.step-panel {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-8);
+  animation: stepEnter var(--transition-mid) var(--ease-out) both;
+}
+
+.step-panel.active {
+  display: flex;
+}
+
+@keyframes stepEnter {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.step-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.step-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  opacity: 0.7;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.step-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  max-width: 520px;
+}
+
+/* ── Question groups ── */
+.question-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.question-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.question-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.question-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: -var(--space-2);
+  font-family: var(--font-mono);
+}
+
+/* ── Score chip card descriptions ── */
+.chip-descriptions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.chip-card {
+  border: 1px solid var(--border-mid);
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.chip-card:hover {
+  border-color: rgba(129, 140, 248, 0.3);
+  background: rgba(129, 140, 248, 0.05);
+}
+
+.chip-card.selected {
+  border-color: rgba(129, 140, 248, 0.45);
+  background: rgba(129, 140, 248, 0.10);
+  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.18);
+}
+
+.chip-card-score {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.chip-card.selected .chip-card-score {
+  color: var(--accent-primary);
+}
+
+.chip-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.chip-card.selected .chip-card-label {
+  color: var(--accent-primary);
+}
+
+.chip-card-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.4;
+  margin-top: var(--space-1);
+}
+
+/* ── Link input group ── */
+.link-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.link-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.link-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.link-input-wrapper .form-input {
+  padding-left: 40px;
+}
+
+/* ── Wizard footer ── */
+.wizard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) 0 var(--space-8);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
+}
+
+#btn-back[disabled] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .wizard-sidebar { display: none; }
+
+  .wizard-main {
+    padding: 0 var(--space-5);
+    max-width: 100%;
+  }
+
+  .chip-descriptions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .chip-descriptions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
